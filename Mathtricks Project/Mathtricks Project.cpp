@@ -6,7 +6,7 @@
 * Winter semester 2024/2025
 *
 * @author Nora Krasimirova Kirilova
-* @idnumber 2MI0600285
+* @idnumber 8MI0600461
 * @compiler VS
 *
 * <file with game>
