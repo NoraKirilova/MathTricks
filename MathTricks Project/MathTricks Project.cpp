@@ -326,7 +326,7 @@ void saveGame(const char* filename, int rows, int cols, int** board, char** oper
     ofstream ofs(filename); // tries to open the file for writing
     if (!ofs) {
         cout << "Could not open \"" << filename << "\" for writing.\n";
-        safeStrCopy(statusMsg, "Auto-save failed!", 256);
+        safeStrCopy(statusMsg, "Auto-save failed!", MAX_STRING_SIZE);
         return;
     }
 
@@ -382,7 +382,7 @@ bool tryPlayerMove(Player& currentP, Player& otherP, int rows, int cols, int** b
         statusMsg[0] = '\0';
 
         if (digit == 'H' || digit == 'h') {
-            safeStrCopy(statusMsg, "Help selected", 256);
+            safeStrCopy(statusMsg, "Help selected", MAX_STRING_SIZE);
             printKeybinds();
             return false;
         }
@@ -390,7 +390,7 @@ bool tryPlayerMove(Player& currentP, Player& otherP, int rows, int cols, int** b
             int dR = 0, dC = 0;
             if (!keypadToDelta(digit, dR, dC)) {
                 cout << "Invalid key!\n";
-                safeStrCopy(statusMsg, "Invalid key pressed!", 256);
+                safeStrCopy(statusMsg, "Invalid key pressed!", MAX_STRING_SIZE);
                 continue;
             }
             int newR = currentP.row + dR;
@@ -398,7 +398,7 @@ bool tryPlayerMove(Player& currentP, Player& otherP, int rows, int cols, int** b
             if (!isValidMove(newR, newC, currentP, rows, cols,
                 visited, otherP)) {
                 cout << "Invalid move!\n";
-                safeStrCopy(statusMsg, "Invalid move!", 256);
+                safeStrCopy(statusMsg, "Invalid move!", MAX_STRING_SIZE);
                 continue;
             }
 
@@ -423,9 +423,9 @@ bool tryPlayerMove(Player& currentP, Player& otherP, int rows, int cols, int** b
             }
 
             lastMoveData.newScore = currentP.score;
-            currentPlayerID = (currentPlayerID == 1 ? 2 : 1); // Flip turn
-            Player p1Local = (currentP.id == 1 ? currentP : otherP); // Auto-save
-            Player p2Local = (currentP.id == 1 ? otherP : currentP);
+            currentPlayerID = (currentPlayerID == FIRST_PLAYER ? SECOND_PLAYER : FIRST_PLAYER); // Flip turn
+            Player p1Local = (currentP.id ==  FIRST_PLAYER ? currentP : otherP); // Auto-save
+            Player p2Local = (currentP.id == FIRST_PLAYER ? otherP : currentP);
 
             saveGame(AUTO_SAVE_FILE, rows, cols, board, operations, visited, p1Local, p2Local, currentPlayerID);
             return true;
@@ -562,7 +562,7 @@ int main() {
 
         if (cin >> choice) {
 
-            if (choice == 1 || choice == 2) {
+            if (choice == NEW_GAME || choice == LOAD_GAME) {
 
                 break;
             }
@@ -656,8 +656,8 @@ int main() {
     printBoard(rows, cols, board, operations, visited, p1, p2, currentPlayerID);
 
     while (!gameOver) {
-        Player& currentP = (currentPlayerID == 1 ? p1 : p2);
-        Player& otherP = (currentPlayerID == 1 ? p2 : p1);
+        Player& currentP = (currentPlayerID == FIRST_PLAYER ? p1 : p2);
+        Player& otherP = (currentPlayerID == FIRST_PLAYER ? p2 : p1);
 
         if (!hasAnyValidMoves(currentP, rows, cols, visited, otherP)) {
             cout << "\n[Player " << currentP.id
